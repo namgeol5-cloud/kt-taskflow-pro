@@ -43,7 +43,7 @@ const STATUS_BADGE = {
   in_progress: 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300',
   done:        'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300',
 };
-const STATUS_LABEL = { todo: 'Todo', in_progress: 'In Progress', done: 'Done' };
+const STATUS_LABEL = { todo: '할일', in_progress: '진행중', done: '완료' };
 
 // ── 렌더링 ────────────────────────────────────────────
 
