@@ -22,3 +22,5 @@ test_taskflow.db
 # OS
 .DS_Store
 Thumbs.db
+
+.vercel
