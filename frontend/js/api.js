@@ -1,4 +1,7 @@
-const API_BASE = 'http://localhost:8000/api';
+// localhost에서는 FastAPI 개발 서버, 배포 환경에서는 동일 도메인 /api
+const API_BASE = window.location.hostname === 'localhost'
+  ? 'http://localhost:8000/api'
+  : '/api';
 
 export async function fetchTasks() {
   const res = await fetch(`${API_BASE}/tasks`);
