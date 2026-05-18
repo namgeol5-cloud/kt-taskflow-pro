@@ -1,3 +1,11 @@
+import sys
+import os
+
+# Vercel 서버리스 환경에서 api/ 디렉토리를 sys.path에 추가
+_api_dir = os.path.dirname(os.path.abspath(__file__))
+if _api_dir not in sys.path:
+    sys.path.insert(0, _api_dir)
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
