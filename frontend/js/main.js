@@ -131,6 +131,7 @@ function buildCard(task) {
 document.getElementById('add-form').addEventListener('submit', async e => {
   e.preventDefault();
   const title = document.getElementById('form-title').value.trim();
+  const description = document.getElementById('form-description').value.trim() || null;
   const dueAt = document.getElementById('form-due-at').value;
   const status = document.getElementById('form-status').value;
   const errEl = document.getElementById('add-error');
@@ -142,7 +143,7 @@ document.getElementById('add-form').addEventListener('submit', async e => {
   }
   errEl.classList.add('hidden');
 
-  const payload = { title, status };
+  const payload = { title, description, status };
   if (dueAt) payload.due_at = toIsoString(dueAt);
 
   try {
