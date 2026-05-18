@@ -3,8 +3,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.main import app
-from app.database import Base, get_db
+from index import app
+from database import Base, get_db
 
 TEST_DB_URL = "sqlite:///./test_taskflow.db"
 test_engine = create_engine(TEST_DB_URL, connect_args={"check_same_thread": False})
