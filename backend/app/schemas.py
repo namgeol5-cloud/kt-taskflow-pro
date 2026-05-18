@@ -65,6 +65,7 @@ class TaskUpdate(BaseModel):
 class TaskListItem(BaseModel):
     id: int
     title: str
+    description: Optional[str] = None
     status: TaskStatus
     due_at: Optional[datetime]
     created_at: datetime
@@ -80,4 +81,4 @@ class TaskListItem(BaseModel):
 
 
 class TaskDetail(TaskListItem):
-    description: Optional[str] = None
+    pass

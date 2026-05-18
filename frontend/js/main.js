@@ -60,6 +60,13 @@ function renderTaskList() {
   state.tasks.forEach(task => list.appendChild(buildCard(task)));
 }
 
+const STATUS_BTN_ACTIVE = {
+  todo:        'bg-gray-400 dark:bg-gray-500 text-white font-semibold',
+  in_progress: 'bg-blue-500 text-white font-semibold',
+  done:        'bg-green-500 text-white font-semibold',
+};
+const STATUS_BTN_INACTIVE = 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600';
+
 function buildCard(task) {
   const due = formatDueAt(task.due_at);
   const card = document.createElement('div');
@@ -67,29 +74,53 @@ function buildCard(task) {
   card.className =
     'bg-white/70 dark:bg-gray-800/70 backdrop-blur-md rounded-xl shadow-lg p-4 cursor-pointer hover:shadow-xl transition-shadow';
 
+  const statusBtns = ['todo', 'in_progress', 'done'].map(s => {
+    const cls = s === task.status ? STATUS_BTN_ACTIVE[s] : STATUS_BTN_INACTIVE;
+    return `<button class="status-btn flex-1 min-h-[44px] text-xs rounded-lg transition-colors ${cls}" data-status="${s}">
+      ${escapeHtml(STATUS_LABEL[s])}
+    </button>`;
+  }).join('');
+
   card.innerHTML = `
-    <div class="flex items-center gap-3">
-      <span class="${STATUS_BADGE[task.status] ?? STATUS_BADGE.todo} text-xs font-medium px-2.5 py-1 rounded-lg flex-shrink-0">
-        ${escapeHtml(STATUS_LABEL[task.status] ?? task.status)}
-      </span>
-      <div class="flex-1 min-w-0">
-        <p class="text-sm font-medium truncate">${escapeHtml(task.title)}</p>
-        ${due
-          ? `<p class="text-xs mt-0.5 ${due.overdue ? 'text-red-500' : 'text-gray-400 dark:text-gray-500'}">${due.text}</p>`
-          : ''}
+    <div class="space-y-2">
+      <div class="flex items-start gap-2">
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium">${escapeHtml(task.title)}</p>
+          ${task.description
+            ? `<p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">${escapeHtml(task.description)}</p>`
+            : ''}
+          ${due
+            ? `<p class="text-xs mt-0.5 ${due.overdue ? 'text-red-500' : 'text-gray-400 dark:text-gray-500'}">${due.text}</p>`
+            : ''}
+        </div>
+        <button
+          class="delete-btn min-h-[44px] min-w-[44px] flex items-center justify-center -mr-1 -mt-1 text-gray-300 hover:text-red-400 dark:text-gray-600 dark:hover:text-red-400 transition-colors flex-shrink-0 text-lg"
+          aria-label="삭제">🗑</button>
       </div>
-      <button
-        class="delete-btn min-h-[44px] min-w-[44px] flex items-center justify-center -mr-1 text-gray-300 hover:text-red-400 dark:text-gray-600 dark:hover:text-red-400 transition-colors flex-shrink-0 text-lg"
-        aria-label="삭제">🗑</button>
+      <div class="flex gap-1.5">${statusBtns}</div>
     </div>
   `;
 
   card.addEventListener('click', e => {
-    if (!e.target.closest('.delete-btn')) openEditModal(task.id);
+    if (!e.target.closest('.delete-btn') && !e.target.closest('.status-btn')) openEditModal(task.id);
   });
   card.querySelector('.delete-btn').addEventListener('click', e => {
     e.stopPropagation();
     openConfirmModal(task.id);
+  });
+  card.querySelectorAll('.status-btn').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      e.stopPropagation();
+      const newStatus = btn.dataset.status;
+      if (newStatus === task.status) return;
+      try {
+        const updated = await updateTask(task.id, { status: newStatus });
+        state.tasks = state.tasks.map(t => t.id === task.id ? updated : t);
+        renderTaskList();
+      } catch (err) {
+        alert(err.message);
+      }
+    });
   });
 
   return card;

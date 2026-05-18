@@ -87,7 +87,7 @@ def test_list_tasks(client):
     assert res.status_code == 200
     data = res.json()
     assert len(data) == 2
-    assert "description" not in data[0]  # 목록에서 description 제외 확인
+    assert "description" in data[0]  # 목록에서 description 포함 확인
 
 
 def test_list_tasks_empty(client):
